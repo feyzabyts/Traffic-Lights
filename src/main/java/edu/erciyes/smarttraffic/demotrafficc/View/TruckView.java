@@ -11,19 +11,19 @@ public class TruckView extends Group {
 
     public TruckView(double x, double y) {
         // Gövde
-        body = new Rectangle(60, 40);
+        body = new Rectangle(40, 20);
         body.setFill(Color.DARKGRAY);
-        body.setX(0);
+        body.setX(11);
         body.setY(0);
 
         // Tekerlekler
-        wheel1 = new Circle(10, Color.BLACK);
-        wheel1.setCenterX(15);
-        wheel1.setCenterY(45);
+        wheel1 = new Circle(7, Color.BLACK);
+        wheel1.setCenterX(20);
+        wheel1.setCenterY(26);
 
-        wheel2 = new Circle(10, Color.BLACK);
-        wheel2.setCenterX(45);
-        wheel2.setCenterY(45);
+        wheel2 = new Circle(7, Color.BLACK);
+        wheel2.setCenterX(43);
+        wheel2.setCenterY(26);
 
         // TruckView Group'a ekle
         this.getChildren().addAll(body, wheel1, wheel2);

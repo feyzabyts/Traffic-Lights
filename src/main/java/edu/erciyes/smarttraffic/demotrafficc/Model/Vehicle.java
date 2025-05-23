@@ -19,6 +19,10 @@ public class Vehicle {
         this.sprite = sprite;
     }
 
+    public Vehicle(double startX, double startY, VehicleType type, Node sprite) {
+
+    }
+
     public void update() {
         if (!reachedIntersection) {
             y += 2;

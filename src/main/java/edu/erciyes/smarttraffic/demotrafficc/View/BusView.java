@@ -14,27 +14,27 @@ public class BusView extends Group {
 
     public BusView(double x, double y) {
         // Gövde - daha uzun ve yüksek
-        body = new Rectangle(100, 50);
+        body = new Rectangle(50, 20);
         body.setFill(Color.ORANGE);
-        body.setX(0);
+        body.setX(11);
         body.setY(0);
 
         // Tekerlekler
-        wheel1 = new Circle(12, Color.BLACK);
-        wheel1.setCenterX(20);
-        wheel1.setCenterY(55);
+        wheel1 = new Circle(7, Color.BLACK);
+        wheel1.setCenterX(18);
+        wheel1.setCenterY(27);
 
-        wheel2 = new Circle(12, Color.BLACK);
-        wheel2.setCenterX(50);
-        wheel2.setCenterY(55);
+        wheel2 = new Circle(7, Color.BLACK);
+        wheel2.setCenterX(35);
+        wheel2.setCenterY(27);
 
-        wheel3 = new Circle(12, Color.BLACK);
-        wheel3.setCenterX(80);
-        wheel3.setCenterY(55);
+        wheel3 = new Circle(7, Color.BLACK);
+        wheel3.setCenterX(52);
+        wheel3.setCenterY(27);
 
         // Label - yazı
         label = new Text("BUS");
-        label.setFont(Font.font("Arial", 18));
+        label.setFont(Font.font("Arial", 9));
         label.setFill(Color.BLACK);
 
         // Yazıyı gövdenin ortasına konumlandır (local koordinatlar)
@@ -47,7 +47,7 @@ public class BusView extends Group {
         this.getChildren().addAll(body, label, wheel1, wheel2, wheel3);
 
         // Başlangıç konumu
-        setLayoutX(x);
+        setLayoutX(x+50);
         setLayoutY(y);
     }
 

@@ -16,50 +16,49 @@ public class TaxiView extends Group {
     private Line verticalRoad, horizontalRoad;
 
     public TaxiView(double x, double y) {
-        double centerX = 300;  // Örnek değer, sahneye göre ayarlayabilirsin
-        double centerY = 300;
+        // Sağdan başlama için x'i 20 birim sağa kaydırıyoruz
+        double startX = x + 20;
 
-        // Aracın gövdesi (dikdörtgen)
-        body = new Rectangle(60, 30, Color.YELLOW);
-        body.setX(x);
+        // Bir tık büyütülmüş gövde: 30x15
+        body = new Rectangle(30, 15, Color.YELLOW);
+        body.setX(startX);
         body.setY(y);
 
-        // Tekerlekler (daireler)
-        wheel1 = new Circle(10, Color.BLACK);
-        wheel1.setCenterX(x + 15);
-        wheel1.setCenterY(y + 35);
+        // Tekerlekler biraz daha büyük, ve pozisyonlar gövdeye göre ayarlandı
+        wheel1 = new Circle(5, Color.BLACK);
+        wheel1.setCenterX(startX + 6);
+        wheel1.setCenterY(y + 15 + 5); // gövdenin altına
 
-        wheel2 = new Circle(10, Color.BLACK);
-        wheel2.setCenterX(x + 45);
-        wheel2.setCenterY(y + 35);
+        wheel2 = new Circle(5, Color.BLACK);
+        wheel2.setCenterX(startX + 24);
+        wheel2.setCenterY(y + 15 + 5);
 
-        // TAXI yazısı
+        // Yazı büyütüldü: 9 pt
         label = new Text("TAXİ");
-        label.setFont(Font.font("Arial", 18));
+        label.setFont(Font.font("Arial", 9));
         label.setFill(Color.BLACK);
 
-        // Yazıyı body'nin içine ortalamak için konumlandır
-        double textX = x + (body.getWidth() / 2) - (label.getLayoutBounds().getWidth() / 2);
+        double textX = startX + (body.getWidth() / 2) - (label.getLayoutBounds().getWidth() / 2);
         double textY = y + (body.getHeight() / 2) + (label.getLayoutBounds().getHeight() / 4);
         label.setX(textX);
         label.setY(textY);
 
-        // Grup içine ekle
         this.getChildren().addAll(body, label, wheel1, wheel2);
-
     }
 
     public void updatePosition(double x, double y) {
-        body.setX(x);
+        double startX = x + 20;  // sağa kaydırma sabit olarak devam ediyor
+
+        body.setX(startX);
         body.setY(y);
 
-        wheel1.setCenterX(x + 15);
-        wheel1.setCenterY(y + 35);
+        wheel1.setCenterX(startX + 6);
+        wheel1.setCenterY(y + 15 + 5);
 
-        wheel2.setCenterX(x + 45);
-        wheel2.setCenterY(y + 35);
+        wheel2.setCenterX(startX + 24);
+        wheel2.setCenterY(y + 15 + 5);
 
-        double textX = x + (body.getWidth() / 2) - (label.getLayoutBounds().getWidth() / 2);
+        double textX = startX + (body.getWidth() / 2) - (label.getLayoutBounds().getWidth() / 2);
         double textY = y + (body.getHeight() / 2) + (label.getLayoutBounds().getHeight() / 4);
         label.setX(textX);
         label.setY(textY);
@@ -74,6 +73,6 @@ public class TaxiView extends Group {
     }
 
     public double getRoadWidth() {
-        return horizontalRoad.getStrokeWidth();  // veya verticalRoad.getStrokeWidth()
+        return horizontalRoad.getStrokeWidth();
     }
 }
