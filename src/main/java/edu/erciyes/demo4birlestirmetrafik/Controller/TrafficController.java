@@ -7,6 +7,7 @@ import edu.erciyes.demo4birlestirmetrafik.Model.VehicleType;
 import edu.erciyes.demo4birlestirmetrafik.View.BusView;
 import edu.erciyes.demo4birlestirmetrafik.View.TaxiView;
 import edu.erciyes.demo4birlestirmetrafik.View.TruckView;
+import edu.erciyes.demo4birlestirmetrafik.View.VehicleView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
@@ -49,12 +50,14 @@ public class TrafficController {
     private Map<String, Integer> vehiclesToInc;
     private int vehicleIncTimer = 0;
     private Pane roadPane;
+    private Map<String, List<Node>> fakeVehicles;
 
     public TrafficController() {
         vehicleDistribution = new HashMap<>();
         greenDurations = new HashMap<>();
         lightStates = new HashMap<>();
         vehiclesToInc = new HashMap<>();
+        fakeVehicles = new HashMap<>();
         vehicleDistribution.put("North", 0);
         vehicleDistribution.put("West", 0);
         vehicleDistribution.put("South", 0);
@@ -63,6 +66,10 @@ public class TrafficController {
         lightStates.put("West", "RED");
         lightStates.put("South", "RED");
         lightStates.put("East", "RED");
+        fakeVehicles.put("North", new ArrayList<>());
+        fakeVehicles.put("West", new ArrayList<>());
+        fakeVehicles.put("South", new ArrayList<>());
+        fakeVehicles.put("East", new ArrayList<>());
         calculateGreenDurations();
     }
 
@@ -102,7 +109,7 @@ public class TrafficController {
             vehicleDistribution.put(directions[i], count);
             remaining -= count;
         }
-        vehicleDistribution.put(directions[3], remaining); // kalanları son yöne ver
+        vehicleDistribution.put(directions[3], remaining);
         calculateGreenDurations();
 
         for (String dir : directions) {
@@ -110,15 +117,12 @@ public class TrafficController {
             int toProduceNow = Math.min(3, total);
             int toProduceLater = Math.max(0, total - 3);
 
-            // Sadece 3 tanesini şimdi ekle (kırmızı ışıkta da olsa bekleyecek)
             for (int i = 0; i < toProduceNow; i++) {
-                addVehicle(dir, false); // hemen sahneye ekle
+                addVehicle(dir, false);
             }
-            // Geri kalanı sıraya al, yeşilde üretilecek
             vehiclesToInc.put(dir, toProduceLater);
         }
 
-        // Butonları aktif et
         northInc.setDisable(false);
         northDec.setDisable(false);
         westInc.setDisable(false);
@@ -134,22 +138,40 @@ public class TrafficController {
         if (northDec != null) northDec.setDisable(!enable);
         if (southInc != null) southInc.setDisable(!enable);
         if (southDec != null) southDec.setDisable(!enable);
-        if (eastInc != null)  eastInc.setDisable(!enable);
-        if (eastDec != null)  eastDec.setDisable(!enable);
-        if (westInc != null)  westInc.setDisable(!enable);
-        if (westDec != null)  westDec.setDisable(!enable);
+        if (eastInc != null) eastInc.setDisable(!enable);
+        if (eastDec != null) eastDec.setDisable(!enable);
+        if (westInc != null) westInc.setDisable(!enable);
+        if (westDec != null) westDec.setDisable(!enable);
     }
-
 
     private void calculateGreenDurations() {
         greenDurations.clear();
         int totalVehicles = vehicleDistribution.values().stream().mapToInt(Integer::intValue).sum();
         int totalGreenAvailable = TOTAL_CYCLE_DURATION - 4 * YELLOW_DURATION;
 
-        for (Map.Entry<String, Integer> entry : vehicleDistribution.entrySet()) {
-            int count = entry.getValue();
-            int duration = totalVehicles == 0 ? 5 : (int) ((count / (double) totalVehicles) * totalGreenAvailable);
-            greenDurations.put(entry.getKey(), Math.max(duration, 5));
+        if (totalVehicles == 0) {
+            // If no vehicles, distribute green time equally
+            for (String direction : new String[]{"North", "West", "South", "East"}) {
+                greenDurations.put(direction, totalGreenAvailable / 4);
+            }
+        } else {
+            // Distribute green time proportionally, ensuring total matches totalGreenAvailable
+            int allocatedGreen = 0;
+            int directionsProcessed = 0;
+            for (String direction : new String[]{"North", "West", "South", "East"}) {
+                int count = vehicleDistribution.getOrDefault(direction, 0);
+                directionsProcessed++;
+                if (directionsProcessed < 4) {
+                    int duration = (int) ((count / (double) totalVehicles) * totalGreenAvailable);
+                    duration = Math.max(duration, 5); // Minimum 5 seconds
+                    greenDurations.put(direction, duration);
+                    allocatedGreen += duration;
+                } else {
+                    // Last direction gets the remaining time to ensure totalGreenAvailable is used
+                    int remainingGreen = totalGreenAvailable - allocatedGreen;
+                    greenDurations.put(direction, Math.max(remainingGreen, 5));
+                }
+            }
         }
     }
 
@@ -171,8 +193,6 @@ public class TrafficController {
         return vehicleDistribution.values().stream().mapToInt(Integer::intValue).sum();
     }
 
-    // New method to handle vehicle count adjustments from buttons
-    // Updated method to handle vehicle count adjustments from buttons
     public void adjustVehicleCount(String direction, int delta) {
         int current = vehicleDistribution.getOrDefault(direction, 0);
         int newCount = Math.max(0, current + delta);
@@ -186,15 +206,13 @@ public class TrafficController {
         vehiclesToInc.put(direction, toProduceLater);
 
         if (delta > 0 && existingInScene < 3) {
-            addVehicle(direction, false); // kırmızı da olsa 3'e kadar göster
+            addVehicle(direction, false);
         } else if (delta < 0 && current > 0) {
             removeVehicle(direction);
         }
 
         recalculateGreenDurations();
     }
-
-
 
     private void addVehicle(String direction, boolean forceGreenCheck) {
         String currentLight = lightStates.getOrDefault(direction, "RED");
@@ -208,8 +226,8 @@ public class TrafficController {
         switch (dir) {
             case NORTH: x = 250; y = 0; break;
             case SOUTH: x = 310; y = 600; break;
-            case EAST:  x = 600; y = 250; break;
-            case WEST:  x = 0;   y = 320; break;
+            case EAST: x = 600; y = 250; break;
+            case WEST: x = 0; y = 320; break;
         }
 
         switch (type) {
@@ -220,12 +238,12 @@ public class TrafficController {
         }
 
         roadPane.getChildren().add(sprite);
+       // sprite.toFront();
         Vehicle vehicle = new Vehicle(x, y, type, sprite, dir);
         vehicle.setLightState(currentLight);
         vehicles.add(vehicle);
     }
 
-    // Yeni metod: Belirtilen yönden bir aracı kaldırır
     private void removeVehicle(String direction) {
         Vehicle vehicleToRemove = vehicles.stream()
                 .filter(v -> v.getDirection().toString().equals(direction))
@@ -236,6 +254,59 @@ public class TrafficController {
             roadPane.getChildren().remove(vehicleToRemove.getSprite());
             vehicles.remove(vehicleToRemove);
         }
+    }
+
+    //Not taxi ve bus üretilemeiyor birçok metod denedi hata için ama bir sonuca varılamadı. Bu yüzden truck üretecektir.
+    //Veya da dolandırıcılık yapıp bir tane daha sınıf açıp buna bağdaştıracağım
+    private void addFakeVehicles(String direction) {
+        List<Node> fakeList = fakeVehicles.getOrDefault(direction, new ArrayList<>());
+        fakeList.clear();
+        roadPane.getChildren().removeIf(node -> (node instanceof BusView || node instanceof TaxiView || node instanceof TruckView)
+                && vehicles.stream().anyMatch(v -> v.getSprite() == node));
+
+        double spacing = 75;
+        for (int i = 0; i < 3; i++) {
+
+            Node sprite = new VehicleView(0, 0);
+            double x = 0, y = 0;
+            Direction dir = Direction.valueOf(direction.toUpperCase());
+            double offset = i * spacing;
+
+            switch (dir) {
+                case NORTH:
+                    x = 230;
+                    y = 10 + offset; // Adjusted to match image placement
+                    break;
+                case SOUTH:
+                    x = 300;
+                    y = 550 - offset; // Adjusted to match image placement
+                    break;
+                case EAST:
+                    x = 525 - offset; // Adjusted to match image placement
+                    y = 260;
+                    break;
+                case WEST:
+                    x = 10 + offset; // Adjusted to match image placement
+                    y = 320;
+                    break;
+            }
+
+            x = Math.max(0, Math.min(x, 600));
+            y = Math.max(0, Math.min(y, 600));
+
+            sprite.setLayoutX(x);
+            sprite.setLayoutY(y);
+            roadPane.getChildren().add(sprite);
+            fakeList.add(sprite);
+        }
+        fakeVehicles.put(direction, fakeList);
+    }
+
+    private void removeFakeVehicles(String direction) {
+        List<Node> fakeList = fakeVehicles.getOrDefault(direction, new ArrayList<>());
+        roadPane.getChildren().removeAll(fakeList);
+        fakeList.clear();
+        fakeVehicles.put(direction, fakeList);
     }
 
     public void startSimulation(VBox northLight, VBox westLight, VBox southLight, VBox eastLight) {
@@ -263,9 +334,12 @@ public class TrafficController {
             vehicleTimeline.stop();
         }
 
-        // Clear existing vehicles and repopulate based on vehiclesToInc
+        for (String direction : new String[]{"North", "West", "South", "East"}) {
+            addFakeVehicles(direction);
+        }
+
         vehicles.clear();
-        roadPane.getChildren().removeIf(node -> node instanceof BusView || node instanceof TaxiView || node instanceof TruckView);
+        roadPane.getChildren().removeIf(node -> node instanceof BusView || node instanceof TaxiView || node instanceof TruckView && !fakeVehicles.values().stream().flatMap(List::stream).anyMatch(n -> n == node));
         vehiclesToInc.clear();
         for (Map.Entry<String, Integer> entry : vehicleDistribution.entrySet()) {
             vehiclesToInc.put(entry.getKey(), entry.getValue());
@@ -276,57 +350,58 @@ public class TrafficController {
         vehicleTimeline.setCycleCount(Timeline.INDEFINITE);
         vehicleTimeline.play();
 
-        int yellowDuration = 3;
-        double t = elapsedTime;
-
         String[] directions = {"North", "West", "South", "East"};
         VBox[] lights = {northLight, westLight, southLight, eastLight};
         ArrayList<KeyFrame> frames = new ArrayList<>();
 
+        double currentTime = 0; // Start at 0 to schedule the full 120-second cycle
+
         for (int i = 0; i < 4; i++) {
             String direction = directions[i];
             VBox light = lights[i];
-            int greenDuration = getTrafficLightForDirection(direction).getGreenLed().getDuration();
+            int greenDuration = greenDurations.getOrDefault(direction, 5);
+            int yellowDuration = YELLOW_DURATION;
 
-            if (t < 120) {
-                frames.add(new KeyFrame(Duration.seconds(t - elapsedTime), e -> {
-                    setAllRed(northLight, westLight, southLight, eastLight);
-                    setLightState(light, "GREEN", direction);
-                    updateTimer(light, greenDuration);
-                    updateVehicleLightStates(direction, "GREEN");
-                }));
-                t += greenDuration;
-            }
-
-            if (t < 120) {
-                frames.add(new KeyFrame(Duration.seconds(t - elapsedTime), e -> {
-                    setLightState(light, "YELLOW", direction);
-                    updateTimer(light, yellowDuration);
-                    updateVehicleLightStates(direction, "YELLOW");
-                }));
-                t += yellowDuration;
-            }
-        }
-
-        if (t < 120) {
-            frames.add(new KeyFrame(Duration.seconds(120 - elapsedTime), e -> {
+            // Schedule green phase
+            frames.add(new KeyFrame(Duration.seconds(currentTime), e -> {
                 setAllRed(northLight, westLight, southLight, eastLight);
-                updateVehicleLightStates(null, "RED");
-                elapsedTime = 0;
-                startBtn.setDisable(false);
-                assignVehiclesBtn.setDisable(false);
-                stopBtn.setDisable(true);
-                resetBtn.setDisable(false);
-                northInc.setDisable(false);
-                northDec.setDisable(false);
-                westInc.setDisable(false);
-                westDec.setDisable(false);
-                southInc.setDisable(false);
-                southDec.setDisable(false);
-                eastInc.setDisable(false);
-                eastDec.setDisable(false);
+                setLightState(light, "GREEN", direction);
+                updateTimer(light, greenDuration);
+                updateVehicleLightStates(direction, "GREEN");
+                removeFakeVehicles(direction);
             }));
+            currentTime += greenDuration;
+
+            // Schedule yellow phase
+            frames.add(new KeyFrame(Duration.seconds(currentTime), e -> {
+                setLightState(light, "YELLOW", direction);
+                updateTimer(light, yellowDuration);
+                updateVehicleLightStates(direction, "YELLOW");
+            }));
+            currentTime += yellowDuration;
         }
+
+        // Schedule the final keyframe to reset the cycle at exactly 120 seconds
+        frames.add(new KeyFrame(Duration.seconds(TOTAL_CYCLE_DURATION), e -> {
+            setAllRed(northLight, westLight, southLight, eastLight);
+            updateVehicleLightStates(null, "RED");
+            elapsedTime = 0;
+            startBtn.setDisable(false);
+            assignVehiclesBtn.setDisable(false);
+            stopBtn.setDisable(true);
+            resetBtn.setDisable(false);
+            northInc.setDisable(false);
+            northDec.setDisable(false);
+            westInc.setDisable(false);
+            westDec.setDisable(false);
+            southInc.setDisable(false);
+            southDec.setDisable(false);
+            eastInc.setDisable(false);
+            eastDec.setDisable(false);
+            for (String direction : new String[]{"North", "West", "South", "East"}) {
+                addFakeVehicles(direction);
+            }
+        }));
 
         timeline.getKeyFrames().addAll(frames);
         timeline.setCycleCount(1);
@@ -411,6 +486,7 @@ public class TrafficController {
                     vehicles.remove(v);
                     break;
                 }
+                //v.getSprite().toFront(); // Araçları her güncellemede en üste getir
             }
         }
     }
@@ -421,64 +497,11 @@ public class TrafficController {
             String lightState = lightStates.getOrDefault(dir, "RED");
 
             if ("GREEN".equals(lightState) && count > 0) {
-                addVehicle(dir, true); // yeşil kontrolüyle ekle
+                addVehicle(dir, true);
                 vehiclesToInc.put(dir, count - 1);
             }
         }
     }
-
-
-
-
-    private void addVehicleInitial(String direction, int index) {
-        VehicleType type = VehicleType.values()[(int) (Math.random() * VehicleType.values().length)];
-        Node sprite;
-        double x = 0, y = 0;
-        Direction dir = Direction.valueOf(direction.toUpperCase());
-
-        double offset = index * getVehicleSpacing(type);
-
-        switch (dir) {
-            case NORTH:
-                x = 250;
-                y = 0 - offset;
-                break;
-            case SOUTH:
-                x = 310;
-                y = 600 + offset;
-                break;
-            case EAST:
-                x = 600 + offset;
-                y = 250;
-                break;
-            case WEST:
-                x = 0 - offset;
-                y = 320;
-                break;
-        }
-
-        switch (type) {
-            case TAXI:
-                sprite = new TaxiView(x, y);
-                break;
-            case TRUCK:
-                sprite = new TruckView(x, y);
-                break;
-            case BUS:
-                sprite = new BusView(x, y);
-                break;
-            default:
-                sprite = new TaxiView(x, y);
-        }
-
-        roadPane.getChildren().add(sprite);
-        Vehicle vehicle = new Vehicle(x, y, type, sprite, dir);
-        vehicle.setLightState("RED"); // kırmızıda bekliyor
-        vehicles.add(vehicle);
-    }
-
-
-
 
     private double getStartPosition(Direction dir) {
         switch (dir) {
@@ -557,7 +580,6 @@ public class TrafficController {
         elapsedTime = 0;
         setAllRed(northLight, westLight, southLight, eastLight);
         resetAllTimers(northLight, westLight, southLight, eastLight);
-        // Instead of resetting to 5, keep the current vehicleDistribution values
         vehicleDistribution.put("North", 0);
         vehicleDistribution.put("West", 0);
         vehicleDistribution.put("South", 0);
@@ -567,6 +589,9 @@ public class TrafficController {
             vehiclesToInc.put(entry.getKey(), entry.getValue());
         }
         vehicles.clear();
+        for (String direction : new String[]{"North", "West", "South", "East"}) {
+            removeFakeVehicles(direction);
+        }
         roadPane.getChildren().removeIf(node -> node instanceof BusView || node instanceof TaxiView || node instanceof TruckView);
         timeline = null;
         vehicleTimeline = null;
@@ -623,13 +648,12 @@ public class TrafficController {
 
     private void updateVehicleLightStates(String direction, String state) {
         if (direction == null) {
-            // Tüm araçların ışığını RED yap (örn. cycle sonunda)
             vehicles.forEach(v -> v.setLightState("RED"));
         } else {
             try {
-                Direction dirEnum = Direction.valueOf(direction.toUpperCase()); // Enum'a çevir
+                Direction dirEnum = Direction.valueOf(direction.toUpperCase());
                 vehicles.stream()
-                        .filter(v -> v.getDirection() == dirEnum) // Enum kıyaslaması
+                        .filter(v -> v.getDirection() == dirEnum)
                         .forEach(v -> v.setLightState(state));
             } catch (IllegalArgumentException e) {
                 System.err.println("Geçersiz yön: " + direction);
