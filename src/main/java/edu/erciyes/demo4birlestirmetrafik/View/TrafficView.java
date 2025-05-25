@@ -11,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 public class TrafficView {
@@ -45,78 +46,126 @@ public class TrafficView {
         controlPane.setPrefWidth(300);
 
         mainLayout.getChildren().addAll(roadPane, controlPane);
-        controller.setRoadPane(roadPane); // roadPane'i kontrolöre ilet
+        controller.setRoadPane(roadPane);
 
         return new Scene(mainLayout, 900, 600);
+    }
+
+    private Line createDashedLine(double startX, double startY, double endX, double endY) {
+        Line dashedLine = new Line(startX, startY, endX, endY);
+        dashedLine.setStroke(Color.WHITE);
+        dashedLine.setStrokeWidth(2);
+        dashedLine.getStrokeDashArray().addAll(10.0, 10.0);
+        return dashedLine;
     }
 
     private Pane createRoadPane() {
         Pane roadPane = new Pane();
         double width = 600;
         double height = 600;
-        double laneWidth = 50;
+
+        double laneWidth = 60;
         double roadWidth = laneWidth * 2;
+        double intersectionSize = roadWidth;
 
-        Rectangle westRoadIn = new Rectangle(0, height/2 - roadWidth, width/2 - roadWidth/2, laneWidth);
-        westRoadIn.setFill(Color.DIMGRAY);
-        Rectangle westRoadOut = new Rectangle(0, height/2, width/2 - roadWidth/2, laneWidth);
-        westRoadOut.setFill(Color.DIMGRAY);
-        Rectangle eastRoadIn = new Rectangle(width/2 + roadWidth/2, height/2 - roadWidth, width/2 - roadWidth/2, laneWidth);
-        eastRoadIn.setFill(Color.DIMGRAY);
-        Rectangle eastRoadOut = new Rectangle(width/2 + roadWidth/2, height/2, width/2 - roadWidth/2, laneWidth);
-        eastRoadOut.setFill(Color.DIMGRAY);
+        Color roadColor = Color.DIMGRAY;
 
-        Rectangle northRoadIn = new Rectangle(width/2 - roadWidth, 0, laneWidth, height/2 - roadWidth/2);
-        northRoadIn.setFill(Color.DIMGRAY);
-        Rectangle northRoadOut = new Rectangle(width/2, 0, laneWidth, height/2 - roadWidth/2);
-        northRoadOut.setFill(Color.DIMGRAY);
-        Rectangle southRoadIn = new Rectangle(width/2 - roadWidth, height/2 + roadWidth/2, laneWidth, height/2 - roadWidth/2);
-        southRoadIn.setFill(Color.DIMGRAY);
-        Rectangle southRoadOut = new Rectangle(width/2, height/2 + roadWidth/2, laneWidth, height/2 - roadWidth/2);
-        southRoadOut.setFill(Color.DIMGRAY);
+        Rectangle westRoadIn = new Rectangle(0, height / 2 - laneWidth, width / 2 - intersectionSize / 2, laneWidth);
+        Rectangle westRoadOut = new Rectangle(0, height / 2, width / 2 - intersectionSize / 2, laneWidth);
+        Rectangle eastRoadIn = new Rectangle(width / 2 + intersectionSize / 2, height / 2, width / 2 - intersectionSize / 2, laneWidth);
+        Rectangle eastRoadOut = new Rectangle(width / 2 + intersectionSize / 2, height / 2 - laneWidth, width / 2 - intersectionSize / 2, laneWidth);
+        Rectangle northRoadIn = new Rectangle(width / 2, 0, laneWidth, height / 2 - intersectionSize / 2);
+        Rectangle northRoadOut = new Rectangle(width / 2 - laneWidth, 0, laneWidth, height / 2 - intersectionSize / 2);
+        Rectangle southRoadIn = new Rectangle(width / 2 - laneWidth, height / 2 + intersectionSize / 2, laneWidth, height / 2 - intersectionSize / 2);
+        Rectangle southRoadOut = new Rectangle(width / 2, height / 2 + intersectionSize / 2, laneWidth, height / 2 - intersectionSize / 2);
+        Rectangle intersection = new Rectangle(width / 2 - intersectionSize / 2, height / 2 - intersectionSize / 2, intersectionSize, intersectionSize);
 
-        Rectangle intersection = new Rectangle(width/2 - roadWidth/2, height/2 - roadWidth/2, roadWidth, roadWidth);
-        intersection.setFill(Color.DIMGRAY);
+        for (Rectangle r : new Rectangle[]{westRoadIn, westRoadOut, eastRoadIn, eastRoadOut,
+                northRoadIn, northRoadOut, southRoadIn, southRoadOut, intersection}) {
+            r.setFill(roadColor);
+        }
 
         roadPane.getChildren().addAll(westRoadIn, westRoadOut, eastRoadIn, eastRoadOut,
                 northRoadIn, northRoadOut, southRoadIn, southRoadOut, intersection);
+
+        Line[] dashedLines = new Line[]{
+                new Line(0, height / 2, width / 2 - intersectionSize / 2, height / 2),
+                new Line(width / 2 + intersectionSize / 2, height / 2, width, height / 2),
+                new Line(width / 2, 0, width / 2, height / 2 - intersectionSize / 2),
+                new Line(width / 2, height / 2 + intersectionSize / 2, width / 2, height)
+        };
+
+        for (Line dashed : dashedLines) {
+            dashed.setStroke(Color.WHITE);
+            dashed.setStrokeWidth(2);
+            dashed.getStrokeDashArray().addAll(10.0, 10.0);
+        }
+
+        roadPane.getChildren().addAll(dashedLines);
 
         northLight = createTrafficLight("North");
         westLight = createTrafficLight("West");
         southLight = createTrafficLight("South");
         eastLight = createTrafficLight("East");
 
-        double northLightX = width/2 - roadWidth/2 - 20;
-        double northLightY = height/2 - roadWidth/2 - 50;
-        double westLightX = width/2 - roadWidth/2 - 50;
-        double westLightY = height/2 + roadWidth/2 + 20;
-        double southLightX = width/2 + roadWidth/2 + 20;
-        double southLightY = height/2 + roadWidth/2 + 20;
-        double eastLightX = width/2 + roadWidth/2 + 20;
-        double eastLightY = height/2 - roadWidth/2 - 50;
+        northLight.setRotate(90);
+        northLight.setLayoutX(width / 2 + intersectionSize / 2 - 170);
+        northLight.setLayoutY(height / 2 - intersectionSize / 2 - 50);
 
-        northLight.setLayoutX(northLightX);
-        northLight.setLayoutY(northLightY);
-        westLight.setLayoutX(westLightX);
-        westLight.setLayoutY(westLightY);
-        southLight.setLayoutX(southLightX);
-        southLight.setLayoutY(southLightY);
-        eastLight.setLayoutX(eastLightX);
-        eastLight.setLayoutY(eastLightY);
+        southLight.setRotate(270);
+        southLight.setLayoutX(width / 2 - intersectionSize / 2 + 160);
+        southLight.setLayoutY(height / 2 + intersectionSize / 2 - 19);
 
-        Label[] coordLabels = new Label[] {
-                new Label("<K1,T1,D1,D2,B1>"), new Label("<B4,D4,D3,T3,K3>"),
-                new Label("<B2,D1,D4,T4,K4>"), new Label("<K2,T2,D2,D3,B3>")
+        westLight.setRotate(180);
+        westLight.setLayoutX(width / 2 - intersectionSize / 2 - 30);
+        westLight.setLayoutY(height / 2 - intersectionSize / 2 + 120);
+
+        eastLight.setRotate(0);
+        eastLight.setLayoutX(width / 2 + intersectionSize / 2 + 10);
+        eastLight.setLayoutY(height / 2 + intersectionSize / 2 - 200);
+
+        roadPane.getChildren().addAll(northLight, westLight, southLight, eastLight);
+
+        Label northLabel = new Label("NORTH");
+        northLabel.setLayoutX(northLight.getLayoutX());
+        northLabel.setLayoutY(northLight.getLayoutY() - 10);
+        northLabel.setRotate(90);
+
+        Label southLabel = new Label("SOUTH");
+        southLabel.setLayoutX(southLight.getLayoutX() - 20);
+        southLabel.setLayoutY(southLight.getLayoutY() + 70);
+        southLabel.setRotate(270);
+
+        Label westLabel = new Label("WEST");
+        westLabel.setLayoutX(westLight.getLayoutX() - 40);
+        westLabel.setLayoutY(westLight.getLayoutY() + 20);
+        westLabel.setRotate(0);
+
+        Label eastLabel = new Label("EAST");
+        eastLabel.setLayoutX(eastLight.getLayoutX() + 20);
+        eastLabel.setLayoutY(eastLight.getLayoutY() + 20);
+        eastLabel.setRotate(0);
+
+        roadPane.getChildren().addAll(northLabel, southLabel, westLabel, eastLabel);
+
+        Label[] coordLabels = new Label[]{
+                new Label("<K1,T1,D1,D2,B1>"),
+                new Label("<B4,D4,D3,T3,K3>"),
+                new Label("<B2,D1,D4,T4,K4>"),
+                new Label("<K2,T2,D2,D3,B3>")
         };
+        coordLabels[0].setLayoutX(30); coordLabels[0].setLayoutY(30);
+        coordLabels[1].setLayoutX(450); coordLabels[1].setLayoutY(30);
+        coordLabels[2].setLayoutX(450); coordLabels[2].setLayoutY(550);
+        coordLabels[3].setLayoutX(30); coordLabels[3].setLayoutY(550);
 
-        roadPane.getChildren().addAll(northLight, westLight, southLight, eastLight,
-                coordLabels[0], coordLabels[1], coordLabels[2], coordLabels[3]);
+        roadPane.getChildren().addAll(coordLabels);
 
         System.out.println("Traffic Light Coordinates:");
-        System.out.println("North Traffic Light: (" + northLightX + ", " + northLightY + ")");
-        System.out.println("West Traffic Light: (" + westLightX + ", " + westLightY + ")");
-        System.out.println("South Traffic Light: (" + southLightX + ", " + southLightY + ")");
-        System.out.println("East Traffic Light: (" + eastLightX + ", " + eastLightY + ")");
+        System.out.println("North Traffic Light: (" + northLight.getLayoutX() + ", " + northLight.getLayoutY() + ")");
+        System.out.println("South Traffic Light: (" + southLight.getLayoutX() + ", " + southLight.getLayoutY() + ")");
+        System.out.println("West Traffic Light: (" + westLight.getLayoutX() + ", " + westLight.getLayoutY() + ")");
+        System.out.println("East Traffic Light: (" + eastLight.getLayoutX() + ", " + eastLight.getLayoutY() + ")");
 
         return roadPane;
     }
@@ -138,8 +187,7 @@ public class TrafficView {
         resetBtn = new Button("Reset");
         assignVehiclesBtn = new Button("Assign Vehicles");
 
-        controller.setButtons(startBtn, assignVehiclesBtn, stopBtn, resetBtn);
-
+        // Pass all buttons to the controller
         Button northInc = new Button("↑");
         Button northDec = new Button("↓");
         Button westInc = new Button("↑");
@@ -149,12 +197,16 @@ public class TrafficView {
         Button eastInc = new Button("↑");
         Button eastDec = new Button("↓");
 
+        controller.setButtons(startBtn, assignVehiclesBtn, stopBtn, resetBtn, northInc, northDec, westInc, westDec, southInc, southDec, eastInc, eastDec);
+
         startBtn.setOnAction(e -> {
             controller.startSimulation(northLight, westLight, southLight, eastLight);
+            updateVehicleLabels();
         });
 
         stopBtn.setOnAction(e -> {
             controller.pauseSimulation(northLight, westLight, southLight, eastLight);
+            updateVehicleLabels();
         });
 
         resetBtn.setOnAction(e -> {
@@ -167,14 +219,39 @@ public class TrafficView {
             updateVehicleLabels();
         });
 
-        northInc.setOnAction(e -> adjustVehicleCount("North", 1));
-        northDec.setOnAction(e -> adjustVehicleCount("North", -1));
-        westInc.setOnAction(e -> adjustVehicleCount("West", 1));
-        westDec.setOnAction(e -> adjustVehicleCount("West", -1));
-        southInc.setOnAction(e -> adjustVehicleCount("South", 1));
-        southDec.setOnAction(e -> adjustVehicleCount("South", -1));
-        eastInc.setOnAction(e -> adjustVehicleCount("East", 1));
-        eastDec.setOnAction(e -> adjustVehicleCount("East", -1));
+        // Set button actions to call controller's adjustVehicleCount and update UI
+        northInc.setOnAction(e -> {
+            controller.adjustVehicleCount("North", 1);
+            updateVehicleLabels();
+        });
+        northDec.setOnAction(e -> {
+            controller.adjustVehicleCount("North", -1);
+            updateVehicleLabels();
+        });
+        westInc.setOnAction(e -> {
+            controller.adjustVehicleCount("West", 1);
+            updateVehicleLabels();
+        });
+        westDec.setOnAction(e -> {
+            controller.adjustVehicleCount("West", -1);
+            updateVehicleLabels();
+        });
+        southInc.setOnAction(e -> {
+            controller.adjustVehicleCount("South", 1);
+            updateVehicleLabels();
+        });
+        southDec.setOnAction(e -> {
+            controller.adjustVehicleCount("South", -1);
+            updateVehicleLabels();
+        });
+        eastInc.setOnAction(e -> {
+            controller.adjustVehicleCount("East", 1);
+            updateVehicleLabels();
+        });
+        eastDec.setOnAction(e -> {
+            controller.adjustVehicleCount("East", -1);
+            updateVehicleLabels();
+        });
 
         HBox controlButtons = new HBox(10, startBtn, stopBtn, resetBtn, assignVehiclesBtn);
         controlButtons.setAlignment(Pos.CENTER);
@@ -217,13 +294,5 @@ public class TrafficView {
         westVehicleLabel.setText("West: " + controller.getVehicleDistribution().getOrDefault("West", 0) + " vehicles");
         southVehicleLabel.setText("South: " + controller.getVehicleDistribution().getOrDefault("South", 0) + " vehicles");
         eastVehicleLabel.setText("East: " + controller.getVehicleDistribution().getOrDefault("East", 0) + " vehicles");
-    }
-
-    private void adjustVehicleCount(String direction, int delta) {
-        int current = controller.getVehicleDistribution().getOrDefault(direction, 0);
-        int newCount = Math.max(0, current + delta);
-        controller.getVehicleDistribution().put(direction, newCount);
-        updateVehicleLabels();
-        controller.recalculateGreenDurations();
     }
 }

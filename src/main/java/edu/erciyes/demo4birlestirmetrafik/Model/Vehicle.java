@@ -9,12 +9,12 @@ import javafx.scene.Node;
 
 public class Vehicle {
     private double x, y;
-    private boolean reachedIntersection = false;
+    private boolean reachedIntersection = false; //Kavşağa ulaşama
     private Direction direction;
     private VehicleType type;
-    private Node sprite;
+    private Node sprite; //yok olma
     private boolean isMoving = true;
-    private double speed = 2.0;
+    private double speed = 3.0;
     private String lightState;
 
     public Vehicle(double x, double y, VehicleType type, Node sprite, Direction direction) {
@@ -91,6 +91,14 @@ public class Vehicle {
         return y;
     }
 
+    public double setX(double x) {
+        this.x = x;
+        return x;
+    }
+    public double setY(double y) {
+        this.y = y;
+        return y;
+    }
     public Node getSprite() {
         return sprite;
     }
