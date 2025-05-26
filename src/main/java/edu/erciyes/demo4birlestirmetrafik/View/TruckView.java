@@ -15,7 +15,7 @@ public class TruckView extends Group {
     public TruckView(double x, double y) {
         // Gövde
         body = new Rectangle(50, 25);
-        body.setFill(Color.BLUE);
+        body.setFill(Color.YELLOWGREEN);
         body.setX(0);
         body.setY(0);
 

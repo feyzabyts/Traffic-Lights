@@ -14,18 +14,19 @@ public class TaxiView extends Group {
 
     public TaxiView(double x, double y) {
         // Gövde
-        body = new Rectangle(30, 15, Color.YELLOW);
+        body = new Rectangle(30, 15);
+        body.setFill(Color.YELLOW);
         body.setX(0);
         body.setY(0);
 
         // Tekerlekler
         wheel1 = new Circle(5, Color.BLACK);
         wheel1.setCenterX(7.5);
-        wheel1.setCenterY(20);
+        wheel1.setCenterY(18); // Gövde yüksekliği 15, tekerlekleri biraz aşağıda konumlandı
 
         wheel2 = new Circle(5, Color.BLACK);
         wheel2.setCenterX(22.5);
-        wheel2.setCenterY(20);
+        wheel2.setCenterY(18);
 
         // TAXI yazısı
         label = new Text("TAXI");

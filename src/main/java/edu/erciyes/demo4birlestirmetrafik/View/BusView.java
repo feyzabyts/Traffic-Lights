@@ -22,15 +22,15 @@ public class BusView extends Group {
         // Tekerlekler
         wheel1 = new Circle(5, Color.BLACK);
         wheel1.setCenterX(10);
-        wheel1.setCenterY(25);
+        wheel1.setCenterY(23); // Gövde yüksekliği 20, tekerlekleri biraz aşağıda konumlandır
 
         wheel2 = new Circle(5, Color.BLACK);
         wheel2.setCenterX(20);
-        wheel2.setCenterY(25);
+        wheel2.setCenterY(23);
 
         wheel3 = new Circle(5, Color.BLACK);
         wheel3.setCenterX(30);
-        wheel3.setCenterY(25);
+        wheel3.setCenterY(23);
 
         // Label - yazı
         label = new Text("BUS");
