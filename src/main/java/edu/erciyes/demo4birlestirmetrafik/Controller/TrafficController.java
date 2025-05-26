@@ -268,6 +268,8 @@ public class TrafficController {
         for (int i = 0; i < 3; i++) {
 
             Node sprite = new VehicleView(0, 0);
+            Node sprite1 = new TaxiView(0, 0);
+            Node sprite2 = new BusView(0, 0);
             double x = 0, y = 0;
             Direction dir = Direction.valueOf(direction.toUpperCase());
             double offset = i * spacing;
@@ -275,11 +277,11 @@ public class TrafficController {
             switch (dir) {
                 case NORTH:
                     x = 230;
-                    y = 10 + offset; // Adjusted to match image placement
+                    y = 70 + offset; // Adjusted to match image placement
                     break;
                 case SOUTH:
                     x = 300;
-                    y = 550 - offset; // Adjusted to match image placement
+                    y = 530 - offset; // Adjusted to match image placement
                     break;
                 case EAST:
                     x = 525 - offset; // Adjusted to match image placement
