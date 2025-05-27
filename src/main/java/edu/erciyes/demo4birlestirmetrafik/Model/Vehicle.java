@@ -9,12 +9,12 @@ import javafx.scene.Node;
 
 public class Vehicle {
     private double x, y;
-    private boolean reachedIntersection = false; //Kavşağa ulaşama
+    private boolean isReachedIntersection = false; //Kavşağa ulaşma
     private Direction direction;
     private VehicleType type;
-    private Node sprite; //yok olma
+    private Node sprite; //yok olma araçlar kayboluyor o yüzden ekledim.
     private boolean isMoving = true;
-    private double speed = 3.0;
+    private double speed = 4.0;
     private String lightState;
 
     public Vehicle(double x, double y, VehicleType type, Node sprite, Direction direction) {
@@ -27,27 +27,27 @@ public class Vehicle {
     }
 
     public void update() {
-        if (!reachedIntersection) {
+        if (!isReachedIntersection) {
             switch (direction) {
                 case NORTH:
                     y += speed;
-                    if (y >= 275) reachedIntersection = true;
+                    if (y >= 275) isReachedIntersection = true;
                     break;
                 case SOUTH:
                     y -= speed;
-                    if (y <= 325) reachedIntersection = true;
+                    if (y <= 325) isReachedIntersection = true;
                     break;
                 case EAST:
                     x -= speed;
-                    if (x <= 325) reachedIntersection = true;
+                    if (x <= 325) isReachedIntersection = true;
                     break;
                 case WEST:
                     x += speed;
-                    if (x >= 275) reachedIntersection = true;
+                    if (x >= 275) isReachedIntersection = true;
                     break;
             }
         } else {
-            if (isMoving && "GREEN".equals(lightState)) {
+            if (isMoving && ("GREEN".equals(lightState) || "YELLOW".equals(lightState))) {
                 switch (direction) {
                     case NORTH: y += speed; break;
                     case SOUTH: y -= speed; break;
@@ -78,7 +78,6 @@ public class Vehicle {
         this.isMoving = moving;
     }
 
-    // Yeni eklenen getter metodu
     public boolean isMoving() {
         return isMoving;
     }
@@ -111,7 +110,7 @@ public class Vehicle {
         return direction;
     }
 
-    public boolean hasReachedIntersection() {
-        return reachedIntersection;
-    }
+   /* public boolean hasReachedIntersection() {
+        return isReachedIntersection;
+    }*/
 }

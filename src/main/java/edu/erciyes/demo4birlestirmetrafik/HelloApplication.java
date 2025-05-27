@@ -11,7 +11,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) {
         TrafficController controller = new TrafficController();
         TrafficView view = new TrafficView(controller);
-        stage.setScene(view.createCombinedScene());
+        stage.setScene(view.createScene());
         stage.setTitle("Traffic Simulation");
         stage.show();
     }

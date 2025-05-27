@@ -1,54 +1,12 @@
 package edu.erciyes.demo4birlestirmetrafik.View;
 
-import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
-public class TaxiView extends Group {
-    private Rectangle body;
-    private Circle wheel1, wheel2;
-    private Text label;
-
+public class TaxiView extends VehicleView {
     public TaxiView(double x, double y) {
-        // Gövde
-        body = new Rectangle(30, 15);
-        body.setFill(Color.YELLOW);
-        body.setX(0);
-        body.setY(0);
-
-        // Tekerlekler
-        wheel1 = new Circle(5, Color.BLACK);
-        wheel1.setCenterX(7.5);
-        wheel1.setCenterY(18); // Gövde yüksekliği 15, tekerlekleri biraz aşağıda konumlandı
-
-        wheel2 = new Circle(5, Color.BLACK);
-        wheel2.setCenterX(22.5);
-        wheel2.setCenterY(18);
-
-        // TAXI yazısı
-        label = new Text("TAXI");
-        label.setFont(Font.font("Arial", 10));
-        label.setFill(Color.BLACK);
-
-        // Yazıyı gövdenin ortasına konumlandır
-        double textX = (body.getWidth() - label.getLayoutBounds().getWidth()) / 2;
-        double textY = (body.getHeight() + label.getLayoutBounds().getHeight()) / 2;
-        label.setX(textX);
-        label.setY(textY);
-
-        // Grup içine ekle
-        this.getChildren().addAll(body, label, wheel1, wheel2);
-
-        // Başlangıç konumu
-        setLayoutX(x);
-        setLayoutY(y);
-    }
-
-    public void updatePosition(double x, double y) {
-        setLayoutX(x);
-        setLayoutY(y);
+        super(x, y,
+                30, 15, Color.YELLOW,      // Gövde: genişlik, yükseklik, renk
+                "TAXI", 10, Color.BLACK,   // Etiket: metin, font boyutu, renk
+                2, 5, 18);                 // Tekerlek: sayı, yarıçap, y konumu
     }
 }

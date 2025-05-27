@@ -13,6 +13,7 @@ public class Led {
         this.duration = duration;
     }
 
+
     public int getDuration() {
         return duration;
     }

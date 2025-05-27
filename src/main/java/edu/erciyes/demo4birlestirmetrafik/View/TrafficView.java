@@ -5,6 +5,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -35,7 +37,7 @@ public class TrafficView {
         this.controller = controller;
     }
 
-    public Scene createCombinedScene() {
+    public Scene createScene() {
         HBox mainLayout = new HBox(20);
         mainLayout.setAlignment(Pos.CENTER);
 
@@ -51,13 +53,6 @@ public class TrafficView {
         return new Scene(mainLayout, 900, 600);
     }
 
-    private Line createDashedLine(double startX, double startY, double endX, double endY) {
-        Line dashedLine = new Line(startX, startY, endX, endY);
-        dashedLine.setStroke(Color.WHITE);
-        dashedLine.setStrokeWidth(2);
-        dashedLine.getStrokeDashArray().addAll(10.0, 10.0);
-        return dashedLine;
-    }
 
     private Pane createRoadPane() {
         Pane roadPane = new Pane();
@@ -148,18 +143,41 @@ public class TrafficView {
 
         roadPane.getChildren().addAll(northLabel, southLabel, westLabel, eastLabel);
 
+        /*
         Label[] coordLabels = new Label[]{
                 new Label("<K1,T1,D1,D2,B1>"),
                 new Label("<B4,D4,D3,T3,K3>"),
                 new Label("<B2,D1,D4,T4,K4>"),
                 new Label("<K2,T2,D2,D3,B3>")
-        };
-        coordLabels[0].setLayoutX(30); coordLabels[0].setLayoutY(30);
-        coordLabels[1].setLayoutX(450); coordLabels[1].setLayoutY(30);
-        coordLabels[2].setLayoutX(450); coordLabels[2].setLayoutY(550);
-        coordLabels[3].setLayoutX(30); coordLabels[3].setLayoutY(550);
+        };*/
 
-        roadPane.getChildren().addAll(coordLabels);
+// Resmi yükle
+        Image treeImage = new Image(getClass().getResourceAsStream("/images/tree.png"));
+
+// Her köşe için bir ImageView oluştur
+        ImageView[] treeIcons = new ImageView[] {
+                new ImageView(treeImage),
+                new ImageView(treeImage),
+                new ImageView(treeImage),
+                new ImageView(treeImage)
+        };
+
+// Boyutları ayarla (isteğe bağlı)
+        for (ImageView tree : treeIcons) {
+            tree.setFitWidth(70);
+            tree.setFitHeight(70);
+        }
+
+// Konumları ayarla
+        treeIcons[0].setLayoutX(30);  treeIcons[0].setLayoutY(30);
+        treeIcons[1].setLayoutX(450); treeIcons[1].setLayoutY(30);
+        treeIcons[2].setLayoutX(450); treeIcons[2].setLayoutY(550);
+        treeIcons[3].setLayoutX(30);  treeIcons[3].setLayoutY(550);
+
+// Ekrana ekle (örneğin bir Pane'e)
+        for (ImageView tree : treeIcons) {
+            roadPane.getChildren().add(tree);  // root senin ana layout'un olmalı (örneğin Pane, AnchorPane vs.)
+        }
 
         System.out.println("Traffic Light Coordinates:");
         System.out.println("North Traffic Light: (" + northLight.getLayoutX() + ", " + northLight.getLayoutY() + ")");
@@ -197,6 +215,7 @@ public class TrafficView {
         Button eastInc = new Button("↑");
         Button eastDec = new Button("↓");
 
+        //Buton aktiflestirme
         controller.setButtons(startBtn, assignVehiclesBtn, stopBtn, resetBtn, northInc, northDec, westInc, westDec, southInc, southDec, eastInc, eastDec);
 
         startBtn.setOnAction(e -> {
@@ -219,7 +238,7 @@ public class TrafficView {
             updateVehicleLabels();
         });
 
-        // Set button actions to call controller's adjustVehicleCount and update UI
+
         northInc.setOnAction(e -> {
             controller.adjustVehicleCount("North", 1);
             updateVehicleLabels();
@@ -256,16 +275,16 @@ public class TrafficView {
         HBox controlButtons = new HBox(10, startBtn, stopBtn, resetBtn, assignVehiclesBtn);
         controlButtons.setAlignment(Pos.CENTER);
 
-        grid.add(new Label("Kuzey"), 0, 0);
+        grid.add(new Label("North"), 0, 0);
         grid.add(new HBox(5, northInc, northDec), 1, 0);
         grid.add(northVehicleLabel, 2, 0);
-        grid.add(new Label("Batı"), 0, 1);
+        grid.add(new Label("West"), 0, 1);
         grid.add(new HBox(5, westInc, westDec), 1, 1);
         grid.add(westVehicleLabel, 2, 1);
-        grid.add(new Label("Güney"), 0, 2);
+        grid.add(new Label("South"), 0, 2);
         grid.add(new HBox(5, southInc, southDec), 1, 2);
         grid.add(southVehicleLabel, 2, 2);
-        grid.add(new Label("Doğu"), 0, 3);
+        grid.add(new Label("East"), 0, 3);
         grid.add(new HBox(5, eastInc, eastDec), 1, 3);
         grid.add(eastVehicleLabel, 2, 3);
         grid.add(vehicleLabel, 0, 4, 3, 1);
@@ -283,7 +302,7 @@ public class TrafficView {
         green.setStroke(Color.BLACK);
 
         Label timeLabel = new Label("0");
-        VBox light = new VBox(2, red, yellow, green, timeLabel);
+        VBox light = new VBox(4, red, yellow, green, timeLabel);
         light.setAlignment(Pos.CENTER);
         return light;
     }

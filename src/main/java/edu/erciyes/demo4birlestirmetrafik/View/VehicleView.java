@@ -7,35 +7,37 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class VehicleView extends Group {
-    private Rectangle body;
-    private Circle wheel1, wheel2, wheel3;
-    private Text label;
+import java.util.ArrayList;
+import java.util.List;
 
-    public VehicleView(double x, double y) {
+public abstract class VehicleView extends Group {
+    protected Rectangle body;
+    protected List<Circle> wheels;
+    protected Text label;
+
+    public VehicleView(double x, double y, double bodyWidth, double bodyHeight, Color bodyColor,
+                   String labelText, double fontSize, Color labelColor, int wheelCount,
+                   double wheelRadius, double wheelY) {
         // Gövde
-        body = new Rectangle(50, 25);
-        body.setFill(Color.ALICEBLUE);
+        body = new Rectangle(bodyWidth, bodyHeight);
+        body.setFill(bodyColor);
         body.setX(0);
         body.setY(0);
 
         // Tekerlekler
-        wheel1 = new Circle(6, Color.BLACK);
-        wheel1.setCenterX(12);
-        wheel1.setCenterY(30);
+        wheels = new ArrayList<>();
+        double wheelSpacing = bodyWidth / (wheelCount + 1);
+        for (int i = 0; i < wheelCount; i++) {
+            Circle wheel = new Circle(wheelRadius, Color.BLACK);
+            wheel.setCenterX(wheelSpacing * (i + 1));
+            wheel.setCenterY(wheelY);
+            wheels.add(wheel);
+        }
 
-        wheel2 = new Circle(6, Color.BLACK);
-        wheel2.setCenterX(25);
-        wheel2.setCenterY(30);
-
-        wheel3 = new Circle(6, Color.BLACK);
-        wheel3.setCenterX(38);
-        wheel3.setCenterY(30);
-
-        // Label - yazı
-        label = new Text("VEHICLE");
-        label.setFont(Font.font("Arial", 11));
-        label.setFill(Color.BLACK);
+        // Etiket
+        label = new Text(labelText);
+        label.setFont(Font.font("Arial", fontSize));
+        label.setFill(labelColor);
 
         // Yazıyı gövdenin ortasına konumlandır
         double textX = (body.getWidth() - label.getLayoutBounds().getWidth()) / 2;
@@ -44,7 +46,8 @@ public class VehicleView extends Group {
         label.setY(textY);
 
         // Grup içine ekle
-        this.getChildren().addAll(body, label, wheel1, wheel2, wheel3);
+        this.getChildren().addAll(body, label);
+        this.getChildren().addAll(wheels);
 
         // Başlangıç konumu
         setLayoutX(x);
