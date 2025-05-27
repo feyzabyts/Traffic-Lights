@@ -1,6 +1,6 @@
 package com.example.demo5.View;
 
-import com.example.demo5.Controller.*;
+import  com.example.demo5.Controller.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -46,15 +46,16 @@ public class TrafficView {
         controlPane.setPrefWidth(300);
 
         mainLayout.getChildren().addAll(roadPane, controlPane);
-        controller.setRoadPane(roadPane); // roadPane'i kontrolöre ilet
+        controller.setRoadPane(roadPane);
 
         return new Scene(mainLayout, 900, 600);
     }
+
     private Line createDashedLine(double startX, double startY, double endX, double endY) {
         Line dashedLine = new Line(startX, startY, endX, endY);
         dashedLine.setStroke(Color.WHITE);
         dashedLine.setStrokeWidth(2);
-        dashedLine.getStrokeDashArray().addAll(10.0, 10.0); // 10 birim çizgi, 10 birim boşluk
+        dashedLine.getStrokeDashArray().addAll(10.0, 10.0);
         return dashedLine;
     }
 
@@ -69,7 +70,6 @@ public class TrafficView {
 
         Color roadColor = Color.DIMGRAY;
 
-        // --- YOLLAR ---
         Rectangle westRoadIn = new Rectangle(0, height / 2 - laneWidth, width / 2 - intersectionSize / 2, laneWidth);
         Rectangle westRoadOut = new Rectangle(0, height / 2, width / 2 - intersectionSize / 2, laneWidth);
         Rectangle eastRoadIn = new Rectangle(width / 2 + intersectionSize / 2, height / 2, width / 2 - intersectionSize / 2, laneWidth);
@@ -88,79 +88,66 @@ public class TrafficView {
         roadPane.getChildren().addAll(westRoadIn, westRoadOut, eastRoadIn, eastRoadOut,
                 northRoadIn, northRoadOut, southRoadIn, southRoadOut, intersection);
 
-        // --- ŞERİT AYIRICI KESİKLİ ÇİZGİLER ---
         Line[] dashedLines = new Line[]{
-                new Line(0, height / 2, width / 2 - intersectionSize / 2, height / 2),                     // Batı
-                new Line(width / 2 + intersectionSize / 2, height / 2, width, height / 2),                 // Doğu
-                new Line(width / 2, 0, width / 2, height / 2 - intersectionSize / 2),                      // Kuzey
-                new Line(width / 2, height / 2 + intersectionSize / 2, width / 2, height)                  // Güney
+                new Line(0, height / 2, width / 2 - intersectionSize / 2, height / 2),
+                new Line(width / 2 + intersectionSize / 2, height / 2, width, height / 2),
+                new Line(width / 2, 0, width / 2, height / 2 - intersectionSize / 2),
+                new Line(width / 2, height / 2 + intersectionSize / 2, width / 2, height)
         };
 
         for (Line dashed : dashedLines) {
             dashed.setStroke(Color.WHITE);
             dashed.setStrokeWidth(2);
-            dashed.getStrokeDashArray().addAll(10.0, 10.0); // Kesikli çizgi ayarı
+            dashed.getStrokeDashArray().addAll(10.0, 10.0);
         }
 
         roadPane.getChildren().addAll(dashedLines);
 
-        // --- TRAFİK IŞIKLARI ---
-        // Trafik ışıklarını oluştur
         northLight = createTrafficLight("North");
         westLight = createTrafficLight("West");
         southLight = createTrafficLight("South");
         eastLight = createTrafficLight("East");
 
-// KUZEY: Yatay konumda, aşağı yönlü (rotate 90)
         northLight.setRotate(90);
-        northLight.setLayoutX(width / 2 + intersectionSize / 2 - 170); // ortadan biraz sağda
-        northLight.setLayoutY(height / 2 - intersectionSize / 2 - 50); // ortanın yukarısında
+        northLight.setLayoutX(width / 2 + intersectionSize / 2 - 170);
+        northLight.setLayoutY(height / 2 - intersectionSize / 2 - 50);
 
-// GÜNEY: Yatay konumda, yukarı yönlü (rotate 270)
         southLight.setRotate(270);
-        southLight.setLayoutX(width / 2 - intersectionSize / 2 + 160); // ortadan biraz solda
-        southLight.setLayoutY(height / 2 + intersectionSize / 2 - 19 ); // ortanın aşağısında
+        southLight.setLayoutX(width / 2 - intersectionSize / 2 + 160);
+        southLight.setLayoutY(height / 2 + intersectionSize / 2 - 19);
 
-// BATI: Yatay konumda, sağa yönlü (rotate 0)
         westLight.setRotate(180);
-        westLight.setLayoutX(width / 2 - intersectionSize / 2 - 30); // ortanın solunda
-        westLight.setLayoutY(height / 2 - intersectionSize / 2 + 120); // ortanın yukarısında
+        westLight.setLayoutX(width / 2 - intersectionSize / 2 - 30);
+        westLight.setLayoutY(height / 2 - intersectionSize / 2 + 120);
 
-// DOĞU: Yatay konumda, sola yönlü (rotate 180)
         eastLight.setRotate(0);
-        eastLight.setLayoutX(width / 2 + intersectionSize / 2 + 10); // ortanın sağında
-        eastLight.setLayoutY(height / 2 + intersectionSize / 2 - 200); // ortanın aşağısında
+        eastLight.setLayoutX(width / 2 + intersectionSize / 2 + 10);
+        eastLight.setLayoutY(height / 2 + intersectionSize / 2 - 200);
 
-// Hepsini sahneye ekle
         roadPane.getChildren().addAll(northLight, westLight, southLight, eastLight);
-        // Kuzey için label
+
         Label northLabel = new Label("NORTH");
         northLabel.setLayoutX(northLight.getLayoutX());
-        northLabel.setLayoutY(northLight.getLayoutY() - 10);  // Trafik ışığının üstüne 20 piksel yukarı
-        northLabel.setRotate(90);  // Kuzey ışığı da döndürülmüş, yazıyı da uygun döndür
+        northLabel.setLayoutY(northLight.getLayoutY() - 10);
+        northLabel.setRotate(90);
 
-// Güney için label
         Label southLabel = new Label("SOUTH");
-        southLabel.setLayoutX(southLight.getLayoutX()- 20);
-        southLabel.setLayoutY(southLight.getLayoutY() + 70);  // Üstüne koyduk
+        southLabel.setLayoutX(southLight.getLayoutX() - 20);
+        southLabel.setLayoutY(southLight.getLayoutY() + 70);
         southLabel.setRotate(270);
 
-// Batı için label
         Label westLabel = new Label("WEST");
-        westLabel.setLayoutX(westLight.getLayoutX()- 40);
-        westLabel.setLayoutY(westLight.getLayoutY() + 20);  // Üstüne koyduk
+        westLabel.setLayoutX(westLight.getLayoutX() - 40);
+        westLabel.setLayoutY(westLight.getLayoutY() + 20);
         westLabel.setRotate(0);
 
-// Doğu için label
         Label eastLabel = new Label("EAST");
-        eastLabel.setLayoutX(eastLight.getLayoutX()+ 20);
-        eastLabel.setLayoutY(eastLight.getLayoutY() + 20);  // Üstüne koyduk
+        eastLabel.setLayoutX(eastLight.getLayoutX() + 20);
+        eastLabel.setLayoutY(eastLight.getLayoutY() + 20);
         eastLabel.setRotate(0);
 
-// Label’ları sahneye ekle
         roadPane.getChildren().addAll(northLabel, southLabel, westLabel, eastLabel);
 
-        // --- KÖŞE ETİKETLERİ ---
         Label[] coordLabels = new Label[]{
                 new Label("<K1,T1,D1,D2,B1>"),
                 new Label("<B4,D4,D3,T3,K3>"),
@@ -174,7 +161,6 @@ public class TrafficView {
 
         roadPane.getChildren().addAll(coordLabels);
 
-        // --- KONSOLA KOORDİNAT YAZDIR ---
         System.out.println("Traffic Light Coordinates:");
         System.out.println("North Traffic Light: (" + northLight.getLayoutX() + ", " + northLight.getLayoutY() + ")");
         System.out.println("South Traffic Light: (" + southLight.getLayoutX() + ", " + southLight.getLayoutY() + ")");
@@ -183,8 +169,6 @@ public class TrafficView {
 
         return roadPane;
     }
-
-
 
     private GridPane createControlPane() {
         GridPane grid = new GridPane();
@@ -203,8 +187,7 @@ public class TrafficView {
         resetBtn = new Button("Reset");
         assignVehiclesBtn = new Button("Assign Vehicles");
 
-        controller.setButtons(startBtn, assignVehiclesBtn, stopBtn, resetBtn);
-
+        // Pass all buttons to the controller
         Button northInc = new Button("↑");
         Button northDec = new Button("↓");
         Button westInc = new Button("↑");
@@ -214,12 +197,16 @@ public class TrafficView {
         Button eastInc = new Button("↑");
         Button eastDec = new Button("↓");
 
+        controller.setButtons(startBtn, assignVehiclesBtn, stopBtn, resetBtn, northInc, northDec, westInc, westDec, southInc, southDec, eastInc, eastDec);
+
         startBtn.setOnAction(e -> {
             controller.startSimulation(northLight, westLight, southLight, eastLight);
+            updateVehicleLabels();
         });
 
         stopBtn.setOnAction(e -> {
             controller.pauseSimulation(northLight, westLight, southLight, eastLight);
+            updateVehicleLabels();
         });
 
         resetBtn.setOnAction(e -> {
@@ -232,14 +219,39 @@ public class TrafficView {
             updateVehicleLabels();
         });
 
-        northInc.setOnAction(e -> adjustVehicleCount("North", 1));
-        northDec.setOnAction(e -> adjustVehicleCount("North", -1));
-        westInc.setOnAction(e -> adjustVehicleCount("West", 1));
-        westDec.setOnAction(e -> adjustVehicleCount("West", -1));
-        southInc.setOnAction(e -> adjustVehicleCount("South", 1));
-        southDec.setOnAction(e -> adjustVehicleCount("South", -1));
-        eastInc.setOnAction(e -> adjustVehicleCount("East", 1));
-        eastDec.setOnAction(e -> adjustVehicleCount("East", -1));
+        // Set button actions to call controller's adjustVehicleCount and update UI
+        northInc.setOnAction(e -> {
+            controller.adjustVehicleCount("North", 1);
+            updateVehicleLabels();
+        });
+        northDec.setOnAction(e -> {
+            controller.adjustVehicleCount("North", -1);
+            updateVehicleLabels();
+        });
+        westInc.setOnAction(e -> {
+            controller.adjustVehicleCount("West", 1);
+            updateVehicleLabels();
+        });
+        westDec.setOnAction(e -> {
+            controller.adjustVehicleCount("West", -1);
+            updateVehicleLabels();
+        });
+        southInc.setOnAction(e -> {
+            controller.adjustVehicleCount("South", 1);
+            updateVehicleLabels();
+        });
+        southDec.setOnAction(e -> {
+            controller.adjustVehicleCount("South", -1);
+            updateVehicleLabels();
+        });
+        eastInc.setOnAction(e -> {
+            controller.adjustVehicleCount("East", 1);
+            updateVehicleLabels();
+        });
+        eastDec.setOnAction(e -> {
+            controller.adjustVehicleCount("East", -1);
+            updateVehicleLabels();
+        });
 
         HBox controlButtons = new HBox(10, startBtn, stopBtn, resetBtn, assignVehiclesBtn);
         controlButtons.setAlignment(Pos.CENTER);
@@ -282,13 +294,5 @@ public class TrafficView {
         westVehicleLabel.setText("West: " + controller.getVehicleDistribution().getOrDefault("West", 0) + " vehicles");
         southVehicleLabel.setText("South: " + controller.getVehicleDistribution().getOrDefault("South", 0) + " vehicles");
         eastVehicleLabel.setText("East: " + controller.getVehicleDistribution().getOrDefault("East", 0) + " vehicles");
-    }
-
-    private void adjustVehicleCount(String direction, int delta) {
-        int current = controller.getVehicleDistribution().getOrDefault(direction, 0);
-        int newCount = Math.max(0, current + delta);
-        controller.getVehicleDistribution().put(direction, newCount);
-        updateVehicleLabels();
-        controller.recalculateGreenDurations();
     }
 }
