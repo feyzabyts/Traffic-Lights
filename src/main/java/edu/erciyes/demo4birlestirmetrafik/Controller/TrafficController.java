@@ -450,7 +450,7 @@ public class TrafficController {
                 double currPos = getPosition(v);
                 double spacing = getVehicleSpacing(v.getType());
 
-                if ("RED".equals(v.getLightState()) ) { //burada şu vardı --> || "YELLOW".equals(v.getLightState())
+                if ("RED".equals(v.getLightState()) ) {
                     v.setMoving(false);
                     if (currPos > lastPos + spacing) {
                         v.setMoving(true);

@@ -3,6 +3,7 @@ package edu.erciyes.demo4birlestirmetrafik.View;
 import edu.erciyes.demo4birlestirmetrafik.Controller.TrafficController;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -163,8 +164,8 @@ public class TrafficView {
         //Konum ayarlama
         treeIcons[0].setLayoutX(30);  treeIcons[0].setLayoutY(30);
         treeIcons[1].setLayoutX(450); treeIcons[1].setLayoutY(30);
-        treeIcons[2].setLayoutX(450); treeIcons[2].setLayoutY(550);
-        treeIcons[3].setLayoutX(30);  treeIcons[3].setLayoutY(550);
+        treeIcons[2].setLayoutX(450); treeIcons[2].setLayoutY(500);
+        treeIcons[3].setLayoutX(30);  treeIcons[3].setLayoutY(500);
 
         for (ImageView tree : treeIcons) {
             roadPane.getChildren().add(tree);  // root senin ana layout'un olmalı (örneğin Pane, AnchorPane vs.)
@@ -224,21 +225,42 @@ public class TrafficView {
             updateVehicleLabels();
         });
 
+
+
         assignVehiclesBtn.setOnAction(e -> {
+
+            if(controller.getTotalVehicleCount()>80){
+                javafx.scene.control.Alert alert=new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                alert.setTitle("Vehicle Count Warning");
+                alert.setHeaderText(null);
+                alert.setContentText("\n" +
+                        "You cannot enter more than 80 vehicles!");
+                alert.showAndWait();
+            }
             controller.assignVehiclesRandomly();
             updateVehicleLabels();
         });
 
 
         northInc.setOnAction(e -> {
+            if (controller.getTotalVehicleCount() > 80) {
+                showAlert("You cannot enter more than 80 vehicles!");
+                return;
+            }
             controller.adjustVehicleCount("North", 1);
             updateVehicleLabels();
         });
+
         northDec.setOnAction(e -> {
             controller.adjustVehicleCount("North", -1);
             updateVehicleLabels();
         });
+
         westInc.setOnAction(e -> {
+            if (controller.getTotalVehicleCount() > 80) {
+                showAlert("You cannot enter more than 80 vehicles!");
+                return;
+            }
             controller.adjustVehicleCount("West", 1);
             updateVehicleLabels();
         });
@@ -247,6 +269,10 @@ public class TrafficView {
             updateVehicleLabels();
         });
         southInc.setOnAction(e -> {
+            if (controller.getTotalVehicleCount() > 80) {
+                showAlert("You cannot enter more than 80 vehicles!");
+                return;
+            }
             controller.adjustVehicleCount("South", 1);
             updateVehicleLabels();
         });
@@ -255,6 +281,10 @@ public class TrafficView {
             updateVehicleLabels();
         });
         eastInc.setOnAction(e -> {
+            if (controller.getTotalVehicleCount() > 80) {
+                showAlert("You cannot enter more than 80 vehicles!");
+                return;
+            }
             controller.adjustVehicleCount("East", 1);
             updateVehicleLabels();
         });
@@ -283,6 +313,15 @@ public class TrafficView {
 
         return grid;
     }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Uyarı");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     private VBox createTrafficLight(String direction) {
         Circle red = new Circle(8, Color.DARKRED);
