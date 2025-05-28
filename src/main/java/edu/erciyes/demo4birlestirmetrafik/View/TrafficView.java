@@ -58,8 +58,11 @@ public class TrafficView {
         Pane roadPane = new Pane();
         double width = 600;
         double height = 600;
+        //Arka planı yesil yapıyor
+        roadPane.setStyle("-fx-background-color: #ace1af;");
 
         double laneWidth = 60;
+
         double roadWidth = laneWidth * 2;
         double intersectionSize = roadWidth;
 
@@ -143,15 +146,6 @@ public class TrafficView {
 
         roadPane.getChildren().addAll(northLabel, southLabel, westLabel, eastLabel);
 
-        /*
-        Label[] coordLabels = new Label[]{
-                new Label("<K1,T1,D1,D2,B1>"),
-                new Label("<B4,D4,D3,T3,K3>"),
-                new Label("<B2,D1,D4,T4,K4>"),
-                new Label("<K2,T2,D2,D3,B3>")
-        };*/
-
-// Resmi yükle
         Image treeImage = new Image(getClass().getResourceAsStream("/images/tree.png"));
 
 // Her köşe için bir ImageView oluştur
@@ -162,19 +156,16 @@ public class TrafficView {
                 new ImageView(treeImage)
         };
 
-// Boyutları ayarla (isteğe bağlı)
         for (ImageView tree : treeIcons) {
-            tree.setFitWidth(70);
-            tree.setFitHeight(70);
+            tree.setFitWidth(80);
+            tree.setFitHeight(80);
         }
-
-// Konumları ayarla
+        //Konum ayarlama
         treeIcons[0].setLayoutX(30);  treeIcons[0].setLayoutY(30);
         treeIcons[1].setLayoutX(450); treeIcons[1].setLayoutY(30);
         treeIcons[2].setLayoutX(450); treeIcons[2].setLayoutY(550);
         treeIcons[3].setLayoutX(30);  treeIcons[3].setLayoutY(550);
 
-// Ekrana ekle (örneğin bir Pane'e)
         for (ImageView tree : treeIcons) {
             roadPane.getChildren().add(tree);  // root senin ana layout'un olmalı (örneğin Pane, AnchorPane vs.)
         }

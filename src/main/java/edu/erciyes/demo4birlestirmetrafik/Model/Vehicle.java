@@ -1,6 +1,5 @@
 package edu.erciyes.demo4birlestirmetrafik.Model;
 
-import edu.erciyes.demo4birlestirmetrafik.Model.VehicleType; // VehicleType'ın eski paketini içe aktar
 import edu.erciyes.demo4birlestirmetrafik.View.BusView;
 import edu.erciyes.demo4birlestirmetrafik.View.TaxiView;
 import edu.erciyes.demo4birlestirmetrafik.View.TruckView;
@@ -110,7 +109,4 @@ public class Vehicle {
         return direction;
     }
 
-   /* public boolean hasReachedIntersection() {
-        return isReachedIntersection;
-    }*/
 }

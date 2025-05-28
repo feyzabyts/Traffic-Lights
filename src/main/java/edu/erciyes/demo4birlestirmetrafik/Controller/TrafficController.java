@@ -525,7 +525,7 @@ public class TrafficController {
         }
     }
 
-    //AÇIKLA
+
     public void pauseSimulation(VBox northLight, VBox westLight, VBox southLight, VBox eastLight) {
         // Simulasyon calisiyorsa duraklat
         if (timeline != null && timeline.getStatus() == Timeline.Status.RUNNING) {
